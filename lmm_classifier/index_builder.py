@@ -30,27 +30,15 @@ class CorpusImage:
 def iter_corpus(root: Path) -> Iterator[CorpusImage]:
     """Yield labelled images from a directory tree.
 
-    The builder supports two corpus layouts:
-
-    ``root/<label>/*.ext``
-        Traditional directory-per-label organisation. Nested subdirectories are
-        allowed and the folder name becomes the label.
-
-    ``root/*.ext``
-        Flat collections without label folders. The label is derived from the
-        filename stem (e.g. ``sample.jpg`` -> ``sample``).
-
-    Files with unsupported extensions are ignored.
+    The directory layout is assumed to be ``root/<label>/*.ext`` with nested
+    subdirectories allowed. Files with unsupported extensions are ignored.
     """
 
-    for entry in sorted(root.iterdir()):
-        if entry.is_dir():
-            label = entry.name
-            for image_path in sorted(entry.rglob("*")):
-                if image_path.is_file() and image_path.suffix.lower() in SUPPORTED_EXTENSIONS:
-                    yield CorpusImage(path=image_path, label=label)
-        elif entry.is_file() and entry.suffix.lower() in SUPPORTED_EXTENSIONS:
-            yield CorpusImage(path=entry, label=entry.stem)
+    for label_dir in sorted(p for p in root.iterdir() if p.is_dir()):
+        label = label_dir.name
+        for image_path in sorted(label_dir.rglob("*")):
+            if image_path.suffix.lower() in SUPPORTED_EXTENSIONS:
+                yield CorpusImage(path=image_path, label=label)
 
 
 def batched(iterable: Iterable[CorpusImage], batch_size: int) -> Iterator[List[CorpusImage]]:
@@ -80,9 +68,7 @@ def build_index_from_directory(
     Parameters
     ----------
     image_root:
-        Root directory containing labelled images. Either organise images into
-        per-label folders (``root/<label>/*.ext``) or place them directly under
-        the root to derive labels from filenames.
+        Root directory containing sub-directories per label.
     embedding_model:
         Optional pre-loaded SigLIP embedding model. When ``None`` the default
         ``SiglipEmbeddingModel`` is instantiated.
@@ -154,11 +140,7 @@ def build_index_from_directory(
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Build a SigLIP embedding index from an image corpus")
-    parser.add_argument(
-        "image_root",
-        type=Path,
-        help="Root directory containing labelled images (folders per label or flat files)",
-    )
+    parser.add_argument("image_root", type=Path, help="Root directory with <label> sub-folders")
     parser.add_argument("--output", type=Path, required=True, help="Destination .npz file for the index")
     parser.add_argument("--batch-size", type=int, default=32, help="Images per SigLIP forward pass")
     parser.add_argument(

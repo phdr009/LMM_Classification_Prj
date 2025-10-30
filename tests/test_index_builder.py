@@ -70,22 +70,3 @@ def test_build_index_from_directory(tmp_path, monkeypatch):
     assert labels == ["cat", "cat", "dog"]
     metadata_paths = sorted(record.metadata["path"] for record in index.records)
     assert metadata_paths == ["cat/a.jpg", "cat/b.png", "dog/c.jpg"]
-
-
-def test_build_index_from_directory_without_label_folders(tmp_path, monkeypatch):
-    root = tmp_path / "flat_corpus"
-    root.mkdir()
-    create_image(root / "lion.jpg", (10, 20, 30))
-    create_image(root / "bear.png", (40, 50, 60))
-
-    model = DummyEmbeddingModel()
-    monkeypatch.setattr("lmm_classifier.index_builder.SiglipEmbeddingModel", lambda: model)
-    monkeypatch.setattr("lmm_classifier.index_builder.EmbeddingIndex", DummyIndex)
-
-    index = build_index_from_directory(image_root=root, batch_size=2)
-
-    assert isinstance(index, DummyIndex)
-    labels = sorted(record.label for record in index.records)
-    assert labels == ["bear", "lion"]
-    metadata_paths = sorted(record.metadata["path"] for record in index.records)
-    assert metadata_paths == ["bear.png", "lion.jpg"]
