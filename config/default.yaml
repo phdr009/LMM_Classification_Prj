@@ -1,0 +1,18 @@
+labels:
+  - cat
+  - dog
+  - car
+retrieval:
+  top_k: 20
+  confidence_threshold: 0.7
+  open_set_threshold: 0.4
+rerank:
+  enabled: true
+  model_name: Qwen/Qwen2-VL-7B-Instruct
+  max_batch_size: 4
+  min_delta: 0.05
+  prompt_template: |
+    Given an input image description and candidate class labels, choose the best matching label.
+    Image: {image_description}
+    Candidates: {candidates}
+allow_unknown: true
