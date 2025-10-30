@@ -25,6 +25,9 @@ dev = [
     "pytest",
 ]
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -q"
