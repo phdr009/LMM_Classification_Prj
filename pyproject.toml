@@ -20,13 +20,13 @@ dependencies = [
     "pyyaml",
 ]
 
-[project.scripts]
-build-siglip-index = "lmm_classifier.index_builder:main"
-
 [project.optional-dependencies]
 dev = [
     "pytest",
 ]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.pytest.ini_options]
 minversion = "7.0"
