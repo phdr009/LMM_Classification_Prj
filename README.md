@@ -16,46 +16,17 @@ Hybrid train-free image pattern classification pipeline combining SigLIP retriev
 ```
 ├── config
 │   └── default.yaml
-├── lmm_classifier
-│   ├── __init__.py
-│   ├── config.py
-│   ├── embeddings.py
-│   ├── index_builder.py
-│   ├── logging_config.py
-│   ├── pipeline.py
-│   └── rerank.py
+├── src
+│   └── lmm_classifier
+│       ├── __init__.py
+│       ├── config.py
+│       ├── embeddings.py
+│       ├── logging_config.py
+│       ├── pipeline.py
+│       └── rerank.py
 ├── tests
-│   ├── test_index_builder.py
 │   └── test_pipeline.py
 └── pyproject.toml
-```
-
-## Generating SigLIP embeddings for a large corpus
-
-Use the provided CLI to embed a labelled corpus (20k+ images) into a reusable
-retrieval index. The expected directory layout is `root/<label>/*.jpg` (nested
-folders are allowed). The builder streams images in batches so it can operate on
-large datasets without exhausting memory.
-
-```bash
-python -m lmm_classifier.index_builder /path/to/corpus --output /path/to/index.npz --batch-size 64
-```
-
-The resulting `.npz` file can be referenced from `config/default.yaml` via the
-`retrieval.index_path` setting.
-
-You can also call the helper directly if you prefer Python scripts:
-
-```python
-from pathlib import Path
-
-from lmm_classifier import build_index_from_directory
-
-build_index_from_directory(
-    image_root=Path("/data/corpus"),
-    batch_size=64,
-    output_path=Path("/data/siglip_index.npz"),
-)
 ```
 
 ## Usage
