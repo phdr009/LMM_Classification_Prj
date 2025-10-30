@@ -1,0 +1,12 @@
+labels:
+  - cat
+  - dog
+  - car
+retrieval:
+  top_k: 20
+  confidence_threshold: 0.7
+  open_set_threshold: 0.4
+rerank:
+  enabled: true
+  max_batch_size: 4
+allow_unknown: true
